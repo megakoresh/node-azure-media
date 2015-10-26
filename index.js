@@ -105,9 +105,9 @@ function AzureAPI(config) {
         cb = cb || function () {};
 
         request.post({
-            uri: this.config.oauth_url, 
+            uri: this.config.oauth_url,
             form: {
-                grant_type: 'client_credentials', 
+                grant_type: 'client_credentials',
                 client_id: this.config.client_id,
                 client_secret: this.config.client_secret,
                 scope: 'urn:WindowsAzureMediaServices'
@@ -123,7 +123,7 @@ function AzureAPI(config) {
             if (result.error) {
                 return cb(result);
             }
-            
+
             this.oauth = result;
             this.oauth.time_started = Date.now();
             cb(err, result.access_token);
@@ -135,8 +135,8 @@ function AzureAPI(config) {
 
         request.get({
             uri: this.modelURI(model, id),
-            headers: this.defaultHeaders(), 
-            followRedirect: false, 
+            headers: this.defaultHeaders(),
+            followRedirect: false,
             strictSSL: true
         }, function (err, res) {
             if (res.statusCode == 200) {
@@ -154,24 +154,24 @@ function AzureAPI(config) {
 
         request.get({
             uri: this.modelURI(model),
-            headers: this.defaultHeaders(), 
-            followRedirect: false, 
+            headers: this.defaultHeaders(),
+            followRedirect: false,
             strictSSL: true,
             qs: query
         }, function (err, res) {
           if (err) return cb(err);
           var objs = [];
           if (res.statusCode == 200) {
-              var data = JSON.parse(res.body).d.results;			  
+              var data = JSON.parse(res.body).d.results;
 			  if(data.length>0) {
 				data.forEach(function (rawd) {
                   var dobj = models[model].create(rawd);
                   objs.push(dobj);
-				});  
+				});
 			  } else {
 				var dobj = models[model].create(rawd);
-				objs.push(dobj);  
-			  }        
+				objs.push(dobj);
+			  }
               cb(err, objs);
           } else {
               cb(err || 'Expected 200 status, received: ' + res.statusCode + '\n' + res.body);
@@ -187,7 +187,7 @@ function AzureAPI(config) {
         if (validationErrors.length) {
             return cb(validationErrors);
         }
-		var fs = require('fs');		
+		var fs = require('fs');
         var r = request.post({
             uri: this.modelURI(model),
             headers: this.defaultHeaders(),
@@ -203,7 +203,7 @@ function AzureAPI(config) {
           } else {
               cb(err || 'Create ' + model + ': Expected 201 status, received: ' + res.statusCode + '\n' + res.body);
           }
-        });		
+        });
 		fs.writeFileSync('jobrequest.txt',JSON.stringify(r), 'utf8');
 		fs.writeFileSync('jobrequestbody.txt',JSON.stringify(data), 'utf8');
     };
@@ -212,10 +212,10 @@ function AzureAPI(config) {
         cb = cb || function () {};
 
         request({
-            method: 'DELETE', 
+            method: 'DELETE',
             uri: this.modelURI(model, id),
             headers: this.defaultHeaders(),
-            followRedirect: false, 
+            followRedirect: false,
             strictSSL: true
         }, function (err, res) {
             if (res.statusCode == 204) {

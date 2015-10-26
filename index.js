@@ -54,19 +54,21 @@ function AzureAPI(config) {
         }.bind(this));
 
         this.getAuthToken(function (err, result) {
+          if (err) return cb(err);
             //get the first redirect
-            request.get({
-                uri: this.modelURI('asset'), 
-                headers: this.defaultHeaders(), 
-                followRedirect: false, 
-                strictSSL: true
-            }, function (err, res) {
-                if (res.statusCode === 301) {
-                    this.config.base_url = res.headers.location;
-                    console.log("changing base url to",  this.config.base_url);
-                }
-                cb(err, result);
-            }.bind(this));
+          request.get({
+              uri: this.modelURI('asset'),
+              headers: this.defaultHeaders(),
+              followRedirect: false,
+              strictSSL: true
+          }, function (err, res) {
+            if (err) return cb(err);
+            if (!err && res.statusCode === 301) {
+                this.config.base_url = res.headers.location;
+                console.log("changing base url to",  this.config.base_url);
+            }
+            cb(err, result);
+          }.bind(this));
         }.bind(this));
     };
 
@@ -75,7 +77,7 @@ function AzureAPI(config) {
             Accept: 'application/json;odata=verbose',
             DataServiceVersion: '3.0',
             MaxDataServiceVersion: '3.0',
-            'x-ms-version': '2.2',
+            'x-ms-version': '2.11',
             'Content-Type': 'application/json;odata=verbose',
             Authorization: 'Bearer ' + this.oauth.access_token
         };
@@ -157,18 +159,24 @@ function AzureAPI(config) {
             strictSSL: true,
             qs: query
         }, function (err, res) {
-            var objs = [];
-            if (res.statusCode == 200) {
-                var data = JSON.parse(res.body).d.results;
-                data.forEach(function (rawd) {
-                    var dobj = models[model].create(rawd);
-                    objs.push(dobj);
-                });
-                cb(err, objs);
-            } else {
-                cb(err || 'Expected 200 status, received: ' + res.statusCode + '\n' + res.body);
-            }
-        });
+          if (err) return cb(err);
+          var objs = [];
+          if (res.statusCode == 200) {
+              var data = JSON.parse(res.body).d.results;			  
+			  if(data.length>0) {
+				data.forEach(function (rawd) {
+                  var dobj = models[model].create(rawd);
+                  objs.push(dobj);
+				});  
+			  } else {
+				var dobj = models[model].create(rawd);
+				objs.push(dobj);  
+			  }        
+              cb(err, objs);
+          } else {
+              cb(err || 'Expected 200 status, received: ' + res.statusCode + '\n' + res.body);
+          }
+      });
     };
 
     this.createRequest = function (model, data, cb) {
@@ -179,22 +187,25 @@ function AzureAPI(config) {
         if (validationErrors.length) {
             return cb(validationErrors);
         }
-
-        request.post({
+		var fs = require('fs');		
+        var r = request.post({
             uri: this.modelURI(model),
             headers: this.defaultHeaders(),
             body: JSON.stringify(data),
             followRedirect: false,
             strictSSL: true
         }, function (err, res) {
-            if (res.statusCode == 201) {
-                var data = JSON.parse(res.body).d;
-                var dobj = models[model].create(data);
-                cb(err, dobj);
-            } else {
-                cb(err || 'Create ' + model + ': Expected 201 status, received: ' + res.statusCode + '\n' + res.body);
-            }
-        });
+          if (err) return cb(err);
+          if (res.statusCode == 201) {
+              var data = JSON.parse(res.body).d;
+              var dobj = models[model].create(data);
+              cb(err, dobj);
+          } else {
+              cb(err || 'Create ' + model + ': Expected 201 status, received: ' + res.statusCode + '\n' + res.body);
+          }
+        });		
+		fs.writeFileSync('jobrequest.txt',JSON.stringify(r), 'utf8');
+		fs.writeFileSync('jobrequestbody.txt',JSON.stringify(data), 'utf8');
     };
 
     this.deleteRequest = function (model, id, cb) {
@@ -232,14 +243,14 @@ function AzureAPI(config) {
             strictSSL: true,
             body: JSON.stringify
         }, function (err, res) {
-            if (res.statusCode == 200) {
-                var data = JSON.parse(res.body).d;
-                var dobj = models[model].create(data);
-                cb(err, dobj);
-            } else {
-                cb(err || 'Expected 200 status, received: ' + res.statusCode);
-            }
-
+          if (err) return cb(err);
+          if (res.statusCode == 200) {
+              var data = JSON.parse(res.body).d;
+              var dobj = models[model].create(data);
+              cb(err, dobj);
+          } else {
+              cb(err || 'Expected 200 status, received: ' + res.statusCode);
+          }
         });
     };
 

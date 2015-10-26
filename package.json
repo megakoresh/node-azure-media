@@ -1,12 +1,39 @@
 {
-  "name": "azure-media",
-  "version": "1.0.0",
-  "homepage": "https://github.com/fritzy/node-azure-media",
-  "repository": {
-    "type": "git",
-    "url": "git@github.com:fritzy/node-azure-media.git"
+  "_args": [
+    [
+      "azure-media@^1.0.11",
+      "D:\\WebMatrix\\mstest1337"
+    ]
+  ],
+  "_from": "azure-media@>=1.0.11 <2.0.0",
+  "_id": "azure-media@1.0.11",
+  "_inCache": true,
+  "_location": "/azure-media",
+  "_npmUser": {
+    "email": "qdu.geek@gmail.com",
+    "name": "bpceee"
   },
-  "description": "Node SDK for Azure's Media Service",
+  "_npmVersion": "1.4.14",
+  "_phantomChildren": {},
+  "_requested": {
+    "name": "azure-media",
+    "raw": "azure-media@^1.0.11",
+    "rawSpec": "^1.0.11",
+    "scope": null,
+    "spec": ">=1.0.11 <2.0.0",
+    "type": "range"
+  },
+  "_requiredBy": [
+    "/"
+  ],
+  "_resolved": "https://registry.npmjs.org/azure-media/-/azure-media-1.0.11.tgz",
+  "_shasum": "4092b99b051be4102e4a0294355b53761c18a0e5",
+  "_shrinkwrap": null,
+  "_spec": "azure-media@^1.0.11",
+  "_where": "D:\\WebMatrix\\mstest1337",
+  "bugs": {
+    "url": "https://github.com/fritzy/node-azure-media/issues"
+  },
   "dependencies": {
     "async": "^0.2.10",
     "moment": "^2.8.3",
@@ -15,5 +42,29 @@
     "request": "^2.34.0",
     "verymodel": "^1.10.1"
   },
-  "main": "index.js"
+  "description": "Node SDK for Azure's Media Service",
+  "devDependencies": {},
+  "directories": {},
+  "dist": {
+    "shasum": "4092b99b051be4102e4a0294355b53761c18a0e5",
+    "tarball": "http://registry.npmjs.org/azure-media/-/azure-media-1.0.11.tgz"
+  },
+  "gitHead": "fb237b6c7ca3865146d69f962256d7a63afc1916",
+  "homepage": "https://github.com/fritzy/node-azure-media",
+  "installable": true,
+  "main": "index.js",
+  "maintainers": [
+    {
+      "name": "bpceee",
+      "email": "qdu.geek@gmail.com"
+    }
+  ],
+  "name": "azure-media",
+  "optionalDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:fritzy/node-azure-media.git"
+  },
+  "scripts": {},
+  "version": "1.0.11"
 }

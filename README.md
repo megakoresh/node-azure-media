@@ -1,5 +1,7 @@
 # Azure Media for Node.js
 
+**Attention!!! Many bugs. Still working on it..**
+
 Azure's Media REST API provides a way to store, encode, and deliver media (video and images).
 This library makes using the API easier.
 
@@ -118,8 +120,7 @@ Some models have extra ORM-like methods, allowing you to interact with the model
 
 ###uploadStream
 
-    api.uploadStream('somefile.mp4', fs.createReadStream('/some/file.mp4'), fs.statSync('/some/file.mp4').size, function (err, path, result) {
-    }, function (err, path) {
+    api.uploadStream('somefile.mp4', fs.createReadStream('/some/file.mp4'), fs.statSync('/some/file.mp4').size, function (err, assetId) {
         if(!err) {
             console.log("done uploading");
         }
@@ -127,11 +128,11 @@ Some models have extra ORM-like methods, allowing you to interact with the model
 
 ### downloadStream
 
-    api.downloadStream(assetId, 'video/mp4', fs.createWriteStream('/some/download/path.mp4', function (err) {
+    api.downloadStream(assetId, fs.createWriteStream('/some/download/path.mp4'), function (err) {
     });
 
 ### getDownloadURL
-    api.getDownloadURL(assetId, 'video/mp4', fs.createWriteStream('/some/download/path.mp4', function (err, url) {
+    api.getDownloadURL(assetId, fs.createWriteStream('/some/download/path.mp4'), function (err, url) {
     });
 
 ### encodeVideo

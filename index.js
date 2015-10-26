@@ -168,9 +168,6 @@ function AzureAPI(config) {
                   var dobj = models[model].create(rawd);
                   objs.push(dobj);
 				});
-			  } else {
-				var dobj = models[model].create(rawd);
-				objs.push(dobj);
 			  }
               cb(err, objs);
           } else {
@@ -187,7 +184,6 @@ function AzureAPI(config) {
         if (validationErrors.length) {
             return cb(validationErrors);
         }
-		var fs = require('fs');
         var r = request.post({
             uri: this.modelURI(model),
             headers: this.defaultHeaders(),
@@ -204,13 +200,10 @@ function AzureAPI(config) {
               cb(err || 'Create ' + model + ': Expected 201 status, received: ' + res.statusCode + '\n' + res.body);
           }
         });
-		fs.writeFileSync('jobrequest.txt',JSON.stringify(r), 'utf8');
-		fs.writeFileSync('jobrequestbody.txt',JSON.stringify(data), 'utf8');
     };
 
     this.deleteRequest = function (model, id, cb) {
         cb = cb || function () {};
-
         request({
             method: 'DELETE',
             uri: this.modelURI(model, id),

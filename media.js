@@ -148,27 +148,34 @@ function AzureBlob(api) {
         function (locator, cb) {
           this.api.rest.assetfile.list(function (err, results) {
             if (results.length > 0) {
-              cb(false, locator, results[0]);
+              cb(false, locator, results);
             } else {
               cb("No files associated with asset.");
             }
           }.bind(this), {$filter: "ParentAssetId eq '" + assetId + "'", $orderby: 'Created desc', $top: 1});
         }.bind(this),
-      ], function (err, locator, fileasset) {
+      ], function (err, locator, fileassets) {
         if (err) {
           done_cb(err);
           return;
         }
         var path = locator.Path;
-        var parsedpath = url.parse(path);
-        if (locatorType == 1)
+        var parsedpath = url.parse(path);		
+        if (locatorType == 1) {
+		  var thumbnails = [];
+		  for(var file in fileassets){
+			  if(file.Name.substr(-4) == '.jpg' || '.png' || '.bmp'){
+				  thumbnails.push(file);
+			  }
+		  }
           parsedpath.pathname += '/' + fileasset.Name;
+		}
         else if(locatorType == 2)
           parsedpath.pathname += (fileasset.Name.slice(0, -13) + '.ism/Manifest');
         else
           done_cb("unknow locatorType");
         path = url.format(parsedpath);
-        done_cb(err, path);
+        done_cb(err, path, thumbnails);
       }.bind(this));
     }
 

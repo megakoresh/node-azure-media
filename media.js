@@ -165,10 +165,13 @@ function AzureBlob(api) {
 		  var thumbnails = [];
 		  for(var file in fileassets){
 			  if(file.Name.substr(-4) == '.jpg' || '.png' || '.bmp'){
-				  thumbnails.push(file);
+				  var thumbpath = parsedpath.pathname + '/' + file.Name;
+				  thumbpath = url.format(thumbpath);
+				  thumbnails.push(thumbpath);
+			  } else {
+			    parsedpath.pathname += '/' + file.Name;
 			  }
 		  }
-          parsedpath.pathname += '/' + fileasset.Name;
 		}
         else if(locatorType == 2)
           parsedpath.pathname += (fileasset.Name.slice(0, -13) + '.ism/Manifest');

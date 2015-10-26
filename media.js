@@ -8,6 +8,35 @@ var Readable = require('stream').Readable;
 var Writable = require('stream').Writable;
 var Duplex = require('stream').Duplex;
 
+if (!Array.prototype.includes) {
+  Array.prototype.includes = function(searchElement /*, fromIndex*/ ) {
+    'use strict';
+    var O = Object(this);
+    var len = parseInt(O.length) || 0;
+    if (len === 0) {
+      return false;
+    }
+    var n = parseInt(arguments[1]) || 0;
+    var k;
+    if (n >= 0) {
+      k = n;
+    } else {
+      k = len + n;
+      if (k < 0) {k = 0;}
+    }
+    var currentElement;
+    while (k < len) {
+      currentElement = O[k];
+      if (searchElement === currentElement ||
+         (searchElement !== searchElement && currentElement !== currentElement)) {
+        return true;
+      }
+      k++;
+    }
+    return false;
+  };
+}
+
 function AzureBlob(api) {
     this.api = api;
 }
@@ -152,7 +181,7 @@ function AzureBlob(api) {
             } else {
               cb("No files associated with asset.");
             }
-          }.bind(this), {$filter: "ParentAssetId eq '" + assetId + "'", $orderby: 'Created desc', $top: 1});
+          }.bind(this), {$filter: "ParentAssetId eq '" + assetId + "'", $orderby: 'Created desc'});
         }.bind(this),
       ], function (err, locator, fileassets) {
         if (err) {
@@ -163,15 +192,17 @@ function AzureBlob(api) {
         var parsedpath = url.parse(path);		
         if (locatorType == 1) {
 		  var thumbnails = [];
+		  var imageextensions = ['.jpg','.png','.bmp'];
 		  fileassets.forEach(function(file){
-			if(file.Name.substr(-4) == '.jpg' || '.png' || '.bmp'){
-				  var thumbpath = parsedpath.pathname + '/' + file.Name;
-				  thumbpath = url.format(thumbpath);
-				  thumbnails.push(thumbpath);
-    		  } else {
-				parsedpath.pathname += '/' + file.Name;
+			if(imageextensions.includes(file.Name.substr(-4))){
+				  var thumbpath = url.parse(path);
+				  thumbpath.pathname += '/' + file.Name;
+				  var thumburl = url.format(thumbpath);
+				  thumbnails.push(thumburl);
+			  } else if (file.Name.substr(-4) == '.mp4') {
+			    parsedpath.pathname += '/' + file.Name;
 			  }  
-		  });		  
+		  });  
 		}
         else if(locatorType == 2)
           parsedpath.pathname += (fileasset.Name.slice(0, -13) + '.ism/Manifest');

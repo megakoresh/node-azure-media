@@ -8,34 +8,32 @@ var Readable = require('stream').Readable;
 var Writable = require('stream').Writable;
 var Duplex = require('stream').Duplex;
 
-if (!Array.prototype.includes) {
-  Array.prototype.includes = function(searchElement /*, fromIndex*/ ) {
-    'use strict';
-    var O = Object(this);
-    var len = parseInt(O.length) || 0;
-    if (len === 0) {
-      return false;
-    }
-    var n = parseInt(arguments[1]) || 0;
-    var k;
-    if (n >= 0) {
-      k = n;
-    } else {
-      k = len + n;
-      if (k < 0) {k = 0;}
-    }
-    var currentElement;
-    while (k < len) {
-      currentElement = O[k];
-      if (searchElement === currentElement ||
-         (searchElement !== searchElement && currentElement !== currentElement)) {
-        return true;
-      }
-      k++;
-    }
-    return false;
-  };
-}
+function includes(array, searchElement) {
+	'use strict';
+	var O = array;
+	var len = parseInt(O.length) || 0;
+	if (len === 0) {
+	  return false;
+	}
+	var n = parseInt(arguments[1]) || 0;
+	var k;
+	if (n >= 0) {
+	  k = n;
+	} else {
+	  k = len + n;
+	  if (k < 0) {k = 0;}
+	}
+	var currentElement;
+	while (k < len) {
+	  currentElement = O[k];
+	  if (searchElement === currentElement ||
+		 (searchElement !== searchElement && currentElement !== currentElement)) {
+		return true;
+	  }
+	  k++;
+	}
+	return false;
+};
 
 function AzureBlob(api) {
     this.api = api;
@@ -194,7 +192,7 @@ function AzureBlob(api) {
 		  var thumbnails = [];
 		  var imageextensions = ['.jpg','.png','.bmp'];
 		  fileassets.forEach(function(file){
-			if(imageextensions.includes(file.Name.substr(-4))){
+			if(includes(imageextensions, file.Name.substr(-4))){
 				  var thumbpath = url.parse(path);
 				  thumbpath.pathname += '/' + file.Name;
 				  var thumburl = url.format(thumbpath);

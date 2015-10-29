@@ -202,8 +202,12 @@ function AzureBlob(api) {
 			  }  
 		  });  
 		}
-        else if(locatorType == 2)
-          parsedpath.pathname += (fileasset.Name.slice(0, -13) + '.ism/Manifest');
+        else if(locatorType == 2){
+			fileassets.forEach(function(file){
+				if(file.Name.substr(-4) == '.ism')
+					parsedpath.pathname += file.Name+'/Manifest';
+			});			
+		}
         else
           done_cb("unknow locatorType");
         path = url.format(parsedpath);

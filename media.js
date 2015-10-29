@@ -35,6 +35,8 @@ function includes(array, searchElement) {
 	return false;
 };
 
+
+
 function AzureBlob(api) {
     this.api = api;
 }
@@ -187,27 +189,35 @@ function AzureBlob(api) {
           return;
         }
         var path = locator.Path;
+		var thumbnails = [];
         var parsedpath = url.parse(path);		
         if (locatorType == 1) {
-		  var thumbnails = [];
-		  var imageextensions = ['.jpg','.png','.bmp'];
-		  fileassets.forEach(function(file){
-			if(includes(imageextensions, file.Name.substr(-4))){
+		  if(fileassets.length>2){			  
+			  var imageextensions = ['.jpg','.png','.bmp'];
+			  fileassets.forEach(function(file){
+				if(includes(imageextensions, file.Name.substr(-4))){
 				  var thumbpath = url.parse(path);
 				  thumbpath.pathname += '/' + file.Name;
 				  var thumburl = url.format(thumbpath);
 				  thumbnails.push(thumburl);
-			  } else if (file.Name.substr(-4) == '.mp4') {
-			    parsedpath.pathname += '/' + file.Name;
-			  }  
-		  });  
+				} else if (file.Name.substr(-4) == '.mp4') {
+				  parsedpath.pathname += '/' + file.Name;
+				}  
+			  });
+		  } else {
+			  fileassets.forEach(function(file){
+				if (file.Name.substr(-4) == '.mp4') {
+					parsedpath.pathname += '/' + file.Name;
+				}
+			  });
+		  }
 		}
         else if(locatorType == 2){
 			fileassets.forEach(function(file){
 				if(file.Name.substr(-4) == '.ism')
 					parsedpath.pathname += file.Name+'/Manifest';
 			});			
-		}
+		}          
         else
           done_cb("unknow locatorType");
         path = url.format(parsedpath);
@@ -229,13 +239,7 @@ function AzureBlob(api) {
         duration = 60;
       }
       this.getUrl(assetId, duration, 2, done_cb);
-    };
-
-    this.getAssetByName = function () {
-    };
-
-    this.getAssetById = function () {
-    };
+    };    
 
     this.encodeVideo = function (assetId, mediaProcessor, encoder, callback) {
         async.waterfall([

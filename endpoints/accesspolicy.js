@@ -22,11 +22,29 @@ var calls = {
     },
 
     findOrCreate: function (duration, permissions, cb) {
-        this.rest.accesspolicy.list(function (err, accesspolicies) {
+        this.rest.accesspolicy.list(function (err, accesspolicies) {			
             if (!err && accesspolicies.length > 0) {
-                cb(err, accesspolicies[0]);
+				var i = 0;
+				var policy, policyExpirationDate, expirationDate;
+				while(i<accesspolicies.length) {
+					policy = accesspolicies[i];					
+					policyExpirationDate = new Date(parseInt(policy.Created.match(/[0-9]+/)[0])) + policy.DurationInMinutes*60000;					
+					expirationDate = Date.now()+duration*60000;					
+					if(policyExpirationDate > expirationDate-60000){
+						console.log(policy);
+						return cb(null, policy);
+					}					
+					i++
+				}			
+				this.rest.accesspolicy.create({
+					DurationInMinutes: duration, 
+					Permissions: permissions, 
+					Name: 'NodeAzureMedia_' + duration + '_' + permissions}, cb);
             } else {
-                this.rest.accesspolicy.create({DurationInMinutes: duration, Permissions: permissions, Name: 'NodeAzureMedia_' + duration + '_' + permissions}, cb);
+                this.rest.accesspolicy.create({
+					DurationInMinutes: duration, 
+					Permissions: permissions, 
+					Name: 'NodeAzureMedia_' + duration + '_' + permissions}, cb);
             }
         }.bind(this), {$filter: "Name eq 'NodeAzureMedia_" + duration + "_" + permissions + "'",  $orderby: 'Created desc', $top: 1});
     },

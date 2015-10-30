@@ -189,14 +189,17 @@ function AzureBlob(api) {
           return;
         }
         var path = locator.Path;
+		if (path.startsWith('http:')){ //set it to run over https
+			path = 'https'+path.substr(4);
+		}		
 		var thumbnails = [];
-        var parsedpath = url.parse(path);		
+        var parsedpath = url.parse(path);			
         if (locatorType == 1) {
 		  if(fileassets.length>2){			  
 			  var imageextensions = ['.jpg','.png','.bmp'];
 			  fileassets.forEach(function(file){
 				if(includes(imageextensions, file.Name.substr(-4))){
-				  var thumbpath = url.parse(path);
+				  var thumbpath = url.parse(path);				  
 				  thumbpath.pathname += '/' + file.Name;
 				  var thumburl = url.format(thumbpath);
 				  thumbnails.push(thumburl);

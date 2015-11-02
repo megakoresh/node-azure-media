@@ -23,7 +23,7 @@ var calls = {
 
     findOrCreate: function (duration, permissions, cb) {
         this.rest.accesspolicy.list(function (err, accesspolicies) {			
-            if (!err && accesspolicies.length > 0) {
+            if (!err && accesspolicies && accesspolicies.length > 0) {
 				var i = 0;
 				var policy, policyExpirationDate, expirationDate;
 				while(i<accesspolicies.length) {

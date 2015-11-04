@@ -24,7 +24,7 @@ var calls = {
     },
 
     deleteAndCreate: function (data, cb) {
-      this.rest.asset.listLocators(data.AssetId, function (err, locators) {
+      this.rest.asset.listLocators(data.AssetId, function (err, locators) {		
         if(!err && locators && locators.length > 0) {
           this.rest.locator.delete(locators[0].toJSON().Id, function (err) {
             if(err) cb(err);

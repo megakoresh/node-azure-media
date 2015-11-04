@@ -170,7 +170,12 @@ function AzureBlob(api) {
           }.bind(this));
         }.bind(this),
         function (policy, cb) {
-          this.api.rest.locator.deleteAndCreate({AccessPolicyId: policy.Id, AssetId: assetId, StartTime: moment.utc().subtract(5, 'minutes').format('MM/DD/YYYY hh:mm:ss A'), Type: locatorType}, function (err, locator) {
+          this.api.rest.locator.deleteAndCreate({
+			  AccessPolicyId: policy.Id, 
+			  AssetId: assetId, 
+			  //StartTime: moment.utc().subtract(5, 'minutes').format('MM/DD/YYYY hh:mm:ss A'), //seems to break often, removing due to: http://blogs.msdn.com/b/kwill/archive/2013/08/28/http-403-server-failed-to-authenticate-the-request-when-using-shared-access-signatures.aspx
+			  Type: locatorType}, 
+			  function (err, locator) {
             cb(err, locator);
           }.bind(this));
         }.bind(this),
@@ -189,7 +194,7 @@ function AzureBlob(api) {
           return;
         }
         var path = locator.Path;
-		if (path.startsWith('http:')){ //set it to run over https
+		if (path.startsWith('http:')){ //set it to run over https			
 			path = 'https'+path.substr(4);
 		}		
 		var thumbnails = [];
@@ -198,7 +203,7 @@ function AzureBlob(api) {
 		  if(fileassets.length>2){			  
 			  var imageextensions = ['.jpg','.png','.bmp'];
 			  fileassets.forEach(function(file){
-				if(includes(imageextensions, file.Name.substr(-4))){
+				if(includes(imageextensions, file.Name.substr(-4))){					
 				  var thumbpath = url.parse(path);				  
 				  thumbpath.pathname += '/' + file.Name;
 				  var thumburl = url.format(thumbpath);

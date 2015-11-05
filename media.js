@@ -249,34 +249,48 @@ function AzureBlob(api) {
       this.getUrl(assetId, duration, 2, done_cb);
     };    
 
-    this.getThumbnails = function(assetId, duration, purgeSASLocators, done_cb){
-		var media = this;
+    this.getThumbnails = function(assetId, duration, purgeSASLocators, done_cb){		
 		if(arguments.length == 2) {
 			done_cb = arguments[1];
 			duration = 1440;
-			purgeSASLocators = true;
-		}
-		/* if(purgeSASLocators){
+			purgeSASLocators = false;
+		}		
+		if(purgeSASLocators){
 			this.api.rest.asset.listLocators(assetId, function(err, locators){
 				if(!err && locators && locators.length>0){
-					locators.forEach(function(locator){
-						if(locator.Type == 1){
-							media.api.rest.locator.delete(locator.Id, function(err){});
-						}
+					async.each(locators, function(locator, cb){
+						if(locator.Type == 1){														
+							this.api.rest.locator.delete(locator.Id, cb);						
+						}				
+					}, function(err){
+						this.getUrl(assetId, duration, 1, function(err, path, thumbnails){
+							if(!err && thumbnails && thumbnails.length>0){
+								return done_cb(null, thumbnails)
+							} else {
+								return done_cb(err || 'No thumbnails found.');
+							}
+						});
 					});
+				} else {
+					this.getUrl(assetId, duration, 1, function(err, path, thumbnails){
+						if(!err && thumbnails && thumbnails.length>0){
+							return done_cb(null, thumbnails)
+						} else {
+							return done_cb(err || 'No thumbnails found.');
+						}
+					});					
 				}
 			});			
-		} else { */
-			media.getUrl(assetId, duration, 1, function(err, path, thumbnails){
+		} else {
+			this.getUrl(assetId, duration, 1, function(err, path, thumbnails){
 				if(!err && thumbnails && thumbnails.length>0){
 					return done_cb(null, thumbnails)
 				} else {
 					return done_cb(err || 'No thumbnails found.');
 				}
 			});
-		//}
-		
-	};
+		}		
+	}
 	
 	this.encodeVideo = function (assetId, mediaProcessor, encoder, callback) {
         async.waterfall([

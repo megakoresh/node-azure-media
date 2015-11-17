@@ -170,14 +170,41 @@ function AzureBlob(api) {
           }.bind(this));
         }.bind(this),
         function (policy, cb) {
-          this.api.rest.locator.deleteAndCreate({
-			  AccessPolicyId: policy.Id, 
-			  AssetId: assetId, 
-			  //StartTime: moment.utc().subtract(5, 'minutes').format('MM/DD/YYYY hh:mm:ss A'), //seems to break often, removing due to: http://blogs.msdn.com/b/kwill/archive/2013/08/28/http-403-server-failed-to-authenticate-the-request-when-using-shared-access-signatures.aspx
-			  Type: locatorType}, 
-			  function (err, locator) {
-            cb(err, locator);
-          }.bind(this));
+			this.api.rest.asset.listLocators(assetId, function(err, locators){
+				if(!err && locators.length>0){
+					var comp = locators.filter(function(l){
+						return l.Type == locatorType;
+					});
+					var locator = comp.find(function(l){
+						var et = new Date(parseInt(l.ExpirationDateTime.match(/[0-9]+/)[0])+60000);
+						var targetTime = new Date(Date.now()+duration*60000);						
+						console.log(targetTime < et);
+						return targetTime < et;
+					});
+					if(locator) cb(null, locator)
+					else {
+						this.api.rest.locator.deleteAndCreate({
+						  AccessPolicyId: policy.Id, 
+						  AssetId: assetId, 
+						  //StartTime: moment.utc().subtract(5, 'minutes').format('MM/DD/YYYY hh:mm:ss A'), //seems to break often, removing due to: http://blogs.msdn.com/b/kwill/archive/2013/08/28/http-403-server-failed-to-authenticate-the-request-when-using-shared-access-signatures.aspx
+						  Type: locatorType}, 
+						  function (err, locator) {
+							console.log(locator.toJSON());
+							cb(err, locator);
+						});
+					}
+				} else {
+					this.api.rest.locator.deleteAndCreate({
+					AccessPolicyId: policy.Id, 
+					AssetId: assetId, 
+					//StartTime: moment.utc().subtract(5, 'minutes').format('MM/DD/YYYY hh:mm:ss A'), //seems to break often, removing due to: http://blogs.msdn.com/b/kwill/archive/2013/08/28/http-403-server-failed-to-authenticate-the-request-when-using-shared-access-signatures.aspx
+					Type: locatorType}, 
+					function (err, locator) {
+					console.log(locator.toJSON());
+					cb(err, locator);
+					});
+				}				
+			}.bind(this));
         }.bind(this),
         function (locator, cb) {
           this.api.rest.assetfile.list(function (err, results) {

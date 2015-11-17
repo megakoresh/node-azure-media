@@ -27,15 +27,13 @@ var calls = {
 				var i = 0;
 				var policy, policyExpirationDate, expirationDate;
 				while(i<accesspolicies.length) {
-					policy = accesspolicies[i];					
-					policyExpirationDate = new Date(parseInt(policy.Created.match(/[0-9]+/)[0])) + policy.DurationInMinutes*60000;					
-					expirationDate = Date.now()+duration*60000;					
-					if(policyExpirationDate > expirationDate-60000){
-						console.log(policy);
+					policy = accesspolicies[i];
+					if(policy.DurationInMinutes == duration) {
+						console.log('Using existing policy');
 						return cb(null, policy);
 					}					
 					i++
-				}			
+				}				
 				this.rest.accesspolicy.create({
 					DurationInMinutes: duration, 
 					Permissions: permissions, 

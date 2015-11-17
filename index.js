@@ -214,7 +214,7 @@ function AzureAPI(config) {
             if (res.statusCode == 204) {
                 cb(err);
             } else {
-                cb(err || 'Expected 204 status, received: ' + res.statusCode);
+                cb(err || {msg: 'Expected 204 status, received: ' + res.statusCode, response: res.body});
             }
         });
     };

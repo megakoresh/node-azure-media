@@ -24,17 +24,21 @@ var calls = {
     },
 
     deleteAndCreate: function (data, cb) {
-      this.rest.asset.listLocators(data.AssetId, function (err, locators) {		
-        if(!err && locators && locators.length > 0) {
-          this.rest.locator.delete(locators[0].toJSON().Id, function (err) {
-            if(err) cb(err);
-            else {
-              this.rest.locator.create(data, cb);
-            }
-          }.bind(this));
+      this.rest.asset.listLocators(data.AssetId, function (err, locators) {
+        if(!err && locators.length > 0) {			
+				var locator = locators.find(function(locator){
+					return locator.Type==data.Type
+				});
+				this.rest.locator.delete(locator.toJSON().Id, function(err){
+					this.rest.locator.create(data, cb);
+				}.bind(this));
+			} else {
+				this.rest.locator.create(data, cb);
+			}
+			
         }
         else{
-          this.rest.locator.create(data, cb);
+			this.rest.locator.create(data, cb);          
         }
       }.bind(this));
     }

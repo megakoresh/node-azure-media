@@ -171,37 +171,42 @@ function AzureBlob(api) {
         }.bind(this),
         function (policy, cb) {
 			this.api.rest.asset.listLocators(assetId, function(err, locators){
+				var data = {
+					AccessPolicyId: policy.Id, 
+					AssetId: assetId, 
+					StartTime: moment.utc().subtract(4, 'minutes').format('MM/DD/YYYY hh:mm:ss A'),
+					Type: locatorType
+				};
 				if(!err && locators.length>0){
 					var comp = locators.filter(function(l){
 						return l.Type == locatorType;
 					});
 					var locator = comp.find(function(l){
-						var et = new Date(parseInt(l.ExpirationDateTime.match(/[0-9]+/)[0])+60000);
+						var et = new Date(parseInt(l.ExpirationDateTime.match(/[0-9]+/)[0])+60000*5);
 						var targetTime = new Date(Date.now()+duration*60000);						
-						console.log(targetTime < et);
+						console.log('Expiration time: '+ moment(et).format("DD.MM.YYYY hh:mm:ss"));
+						console.log('Target time: '+ moment(targetTime).format("DD.MM.YYYY hh:mm:ss"));
 						return targetTime < et;
 					});
-					if(locator) cb(null, locator)
-					else {
-						this.api.rest.locator.deleteAndCreate({
-						  AccessPolicyId: policy.Id, 
-						  AssetId: assetId, 
-						  //StartTime: moment.utc().subtract(5, 'minutes').format('MM/DD/YYYY hh:mm:ss A'), //seems to break often, removing due to: http://blogs.msdn.com/b/kwill/archive/2013/08/28/http-403-server-failed-to-authenticate-the-request-when-using-shared-access-signatures.aspx
-						  Type: locatorType}, 
-						  function (err, locator) {
-							console.log(locator.toJSON());
+					if(locator) {
+						console.log('Reusing locator');
+						cb(null, locator)
+					} else {
+						this.api.rest.locator.deleteAndCreate(data, function (err, locator) {
+							if(!err)
+								console.log('New locator expires: '+moment(parseInt(locator.ExpirationDateTime.match(/[0-9]+/)[0])).format("DD.MM.YYYY hh:mm:ss"));
+							else
+								console.log(err)
 							cb(err, locator);
 						});
 					}
 				} else {
-					this.api.rest.locator.deleteAndCreate({
-					AccessPolicyId: policy.Id, 
-					AssetId: assetId, 
-					//StartTime: moment.utc().subtract(5, 'minutes').format('MM/DD/YYYY hh:mm:ss A'), //seems to break often, removing due to: http://blogs.msdn.com/b/kwill/archive/2013/08/28/http-403-server-failed-to-authenticate-the-request-when-using-shared-access-signatures.aspx
-					Type: locatorType}, 
-					function (err, locator) {
-					console.log(locator.toJSON());
-					cb(err, locator);
+					this.api.rest.locator.deleteAndCreate(data, function (err, locator) {
+						if(!err)
+							console.log('New locator expires: '+moment(parseInt(locator.ExpirationDateTime.match(/[0-9]+/)[0])).format("DD.MM.YYYY hh:mm:ss"));
+						else
+							console.log(err)
+						cb(err, locator);
 					});
 				}				
 			}.bind(this));

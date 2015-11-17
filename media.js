@@ -170,14 +170,15 @@ function AzureBlob(api) {
           }.bind(this));
         }.bind(this),
         function (policy, cb) {
-			this.api.rest.asset.listLocators(assetId, function(err, locators){
-				var data = {
+			var data = {
 					AccessPolicyId: policy.Id, 
 					AssetId: assetId, 
-					StartTime: moment.utc().subtract(4, 'minutes').format('MM/DD/YYYY hh:mm:ss A'),
+					StartTime: moment.utc().subtract(4, 'minutes').toISOString(),
 					Type: locatorType
 				};
-				if(!err && locators.length>0){
+			this.api.rest.locator.getOrCreate(data,cb);
+		  /*this.api.rest.asset.listLocators(assetId, function(err, locators){
+				 if(!err && locators.length>0){
 					var comp = locators.filter(function(l){
 						return l.Type == locatorType;
 					});
@@ -208,8 +209,8 @@ function AzureBlob(api) {
 							console.log(err)
 						cb(err, locator);
 					});
-				}				
-			}.bind(this));
+				} 
+			}.bind(this));*/			
         }.bind(this),
         function (locator, cb) {
           this.api.rest.assetfile.list(function (err, results) {

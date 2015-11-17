@@ -24,7 +24,8 @@ var calls = {
     findOrCreate: function (duration, permissions, cb) {
         this.rest.accesspolicy.list(function (err, accesspolicies) {			
             if (!err && accesspolicies && accesspolicies.length > 0) {
-				var i = 0;
+				cb(null, accesspolicies[0]);
+				/* var i = 0;
 				var policy, policyExpirationDate, expirationDate;
 				while(i<accesspolicies.length) {
 					policy = accesspolicies[i];
@@ -37,7 +38,7 @@ var calls = {
 				this.rest.accesspolicy.create({
 					DurationInMinutes: duration, 
 					Permissions: permissions, 
-					Name: 'NodeAzureMedia_' + duration + '_' + permissions}, cb);
+					Name: 'NodeAzureMedia_' + duration + '_' + permissions}, cb); */
             } else {
                 this.rest.accesspolicy.create({
 					DurationInMinutes: duration, 

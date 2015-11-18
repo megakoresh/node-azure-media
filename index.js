@@ -158,7 +158,7 @@ function AzureAPI(config) {
             followRedirect: false,
             strictSSL: true,
             qs: query
-        }, function (err, res) {
+        }, function (err, res) {			
           if (err) return cb(err);
           var objs = [];
           if (res.statusCode == 200) {
@@ -214,7 +214,7 @@ function AzureAPI(config) {
             if (res.statusCode == 204) {
                 cb(err);
             } else {
-                cb(err || {msg: 'Expected 204 status, received: ' + res.statusCode, response: res.body});
+                cb(err || 'Delete ' + model + ': Expected 204 status, received: ' + res.statusCode + '\n' + res.body);
             }
         });
     };
@@ -234,15 +234,20 @@ function AzureAPI(config) {
             headers: this.defaultHeaders(),
             followRedirect: false,
             strictSSL: true,
-            body: JSON.stringify
+            body: JSON.stringify(data)
         }, function (err, res) {
           if (err) return cb(err);
-          if (res.statusCode == 200) {
-              var data = JSON.parse(res.body).d;
-              var dobj = models[model].create(data);
-              cb(err, dobj);
+          if (res.statusCode == 204 || res.statusCode == 200) {
+			  if(res.statusCode == 204){
+				  console.log(res.body);
+				  cb(err, 'No content');
+			  } else {
+				var data = JSON.parse(res.body).d;
+				var dobj = models[model].create(data);  
+				cb(err, dobj);
+			  }              
           } else {
-              cb(err || 'Expected 200 status, received: ' + res.statusCode);
+              cb(err || 'Update ' + model + ': Expected 204 or 200 status, received: ' + res.statusCode + '\n' + res.body);
           }
         });
     };

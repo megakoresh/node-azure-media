@@ -176,7 +176,13 @@ function AzureBlob(api) {
 					StartTime: moment.utc().subtract(4, 'minutes').toISOString(),
 					Type: locatorType
 				};
-			this.api.rest.locator.getOrCreate(data,cb);
+			if(locatorType == 2) {
+				this.api.rest.locator.getOrCreate(data,cb);
+			} else if (locatorType == 1) {
+				this.api.rest.locator.deleteAndCreate(data,cb);
+			} else {
+				cb('unknown locator type');
+			}
 		  /*this.api.rest.asset.listLocators(assetId, function(err, locators){
 				 if(!err && locators.length>0){
 					var comp = locators.filter(function(l){

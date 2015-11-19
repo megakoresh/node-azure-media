@@ -115,27 +115,36 @@ var calls = {
 				async.each(locators, 
 					function checkLocator(locator, processedLocator){
 						console.log(locator.toJSON());
-						var et = moment.utc(parseInt(locator.ExpirationDateTime.match(/[0-9]+/)[0]));
+						var et = moment.utc(parseInt(locator.ExpirationDateTime.match(/[0-9]+/)[0])).add(1, 'minutes'); //add some leeway, this is a parallel operation after all						
+						console.log('Old expiration date is '+et.toISOString());
 						var st = moment.utc(parseInt(locator.StartTime.match(/[0-9]+/)[0]));
+						console.log('Start time is '+st.toISOString());
 						var now = moment.utc();
-						var diff = st.diff(now, 'hours', true);					
-						if(diff > 24){
-							console.log('Older than a day, removing.');
+						console.log('System time: '+now.toISOString());
+						var age = now.diff(st, 'hours', true);
+						console.log('Age: '+age);
+						if(age > 24 || et.isBefore(now)){ //if it already expired, don't extend
+							console.log('Older than a day or expired, removing.');
 							this.rest.locator.delete(locator.toJSON().Id, processedLocator);
 						} else {
-							var duration = st.diff(et, 'minutes', true);							
-							var newLocatorData = locator.toJSON();
-							newLocatorData.ExpirationDateTime = moment().utc(data.StartTime).add(duration, 'minutes').toISOString();
-							newLocatorData.StartTime = st.toISOString();
-							console.log('Using existing locator. Extending duration.');
-							console.log('Old expiration date is '+et.toISOString());
-							console.log('New expiration date is '+newLocatorData.ExpirationDateTime);											
-							console.log('Start time is '+st.toISOString());
-							this.rest.locator.update(locator.toJSON().Id, newLocatorData, function(err, updated){
-								if(err) console.log('Error updating locator: '+err);
-								fittingLocator = updated;
+							var duration = et.diff(st, 'minutes', true);
+							console.log('Duration:  '+duration);
+							if(now.diff(et, 'minutes', true) < 60){ //no need to extend more. TODO: make this value customizable
+								console.log('No need to extend, returning');
+								fittingLocator = locator;
 								processedLocator('OK');
-							});
+							} else {
+								var newLocatorData = locator.toJSON();
+								newLocatorData.ExpirationDateTime = et.add(duration, 'minutes').toISOString();
+								console.log('New expiration date is '+newLocatorData.ExpirationDateTime);
+								newLocatorData.StartTime = st.toISOString(); //have to convert for the validator...
+								console.log('Using existing locator. Extending duration.');															
+								this.rest.locator.update(locator.toJSON().Id, newLocatorData, function(err, updated){
+									if(err) console.log('Error updating locator: \n'+err);
+									fittingLocator = updated;
+									processedLocator('OK');
+								});
+							}
 						}
 					}.bind(this), 
 					function checkedAllLocators(err){

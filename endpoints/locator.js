@@ -129,7 +129,7 @@ var calls = {
 						} else {
 							var duration = et.diff(st, 'minutes', true);
 							console.log('Duration:  '+duration);
-							if(now.diff(et, 'minutes', true) < 60){ //no need to extend more. TODO: make this value customizable
+							if(now.diff(et, 'minutes', true) > 60){ //no need to extend more. TODO: make this value customizable
 								console.log('No need to extend, returning');
 								fittingLocator = locator;
 								processedLocator('OK');

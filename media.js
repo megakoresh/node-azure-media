@@ -182,41 +182,7 @@ function AzureBlob(api) {
 				this.api.rest.locator.deleteAndCreate(data,cb);
 			} else {
 				cb('unknown locator type');
-			}
-		  /*this.api.rest.asset.listLocators(assetId, function(err, locators){
-				 if(!err && locators.length>0){
-					var comp = locators.filter(function(l){
-						return l.Type == locatorType;
-					});
-					var locator = comp.find(function(l){
-						var et = new Date(parseInt(l.ExpirationDateTime.match(/[0-9]+/)[0])+60000*5);
-						var targetTime = new Date(Date.now()+duration*60000);						
-						console.log('Expiration time: '+ moment(et).format("DD.MM.YYYY hh:mm:ss"));
-						console.log('Target time: '+ moment(targetTime).format("DD.MM.YYYY hh:mm:ss"));
-						return targetTime < et;
-					});
-					if(locator) {
-						console.log('Reusing locator');
-						cb(null, locator)
-					} else {
-						this.api.rest.locator.deleteAndCreate(data, function (err, locator) {
-							if(!err)
-								console.log('New locator expires: '+moment(parseInt(locator.ExpirationDateTime.match(/[0-9]+/)[0])).format("DD.MM.YYYY hh:mm:ss"));
-							else
-								console.log(err)
-							cb(err, locator);
-						});
-					}
-				} else {
-					this.api.rest.locator.deleteAndCreate(data, function (err, locator) {
-						if(!err)
-							console.log('New locator expires: '+moment(parseInt(locator.ExpirationDateTime.match(/[0-9]+/)[0])).format("DD.MM.YYYY hh:mm:ss"));
-						else
-							console.log(err)
-						cb(err, locator);
-					});
-				} 
-			}.bind(this));*/			
+			}		
         }.bind(this),
         function (locator, cb) {
           this.api.rest.assetfile.list(function (err, results) {
@@ -239,7 +205,7 @@ function AzureBlob(api) {
 		var thumbnails = [];
         var parsedpath = url.parse(path);			
         if (locatorType == 1) {
-		  if(fileassets.length>2){			  
+		  if(fileassets.length>1){			  
 			  var imageextensions = ['.jpg','.png','.bmp'];
 			  fileassets.forEach(function(file){
 				if(includes(imageextensions, file.Name.substr(-4))){					
@@ -251,12 +217,8 @@ function AzureBlob(api) {
 				  parsedpath.pathname += '/' + file.Name;
 				}  
 			  });
-		  } else {
-			  fileassets.forEach(function(file){
-				if (file.Name.substr(-4) == '.mp4') {
-					parsedpath.pathname += '/' + file.Name;
-				}
-			  });
+		  } else {			
+			parsedpath.pathname += '/' + fileassets[0].Name;
 		  }
 		}
         else if(locatorType == 2){

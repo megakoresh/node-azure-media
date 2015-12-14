@@ -1,12 +1,11 @@
 {
   "_args": [
     [
-      "azure-media@^1.0.11",
-      "D:\\WebMatrix\\mstest1337"
+      "azure-media@^1.1.0",
     ]
   ],
-  "_from": "azure-media@>=1.0.11 <2.0.0",
-  "_id": "azure-media@1.0.11",
+  "_from": "azure-media@>=1.1.0 <2.0.0",
+  "_id": "azure-media@1.1.0",
   "_inCache": true,
   "_location": "/azure-media",
   "_npmUser": {
@@ -17,10 +16,10 @@
   "_phantomChildren": {},
   "_requested": {
     "name": "azure-media",
-    "raw": "azure-media@^1.0.11",
-    "rawSpec": "^1.0.11",
+    "raw": "azure-media@^1.1.0",
+    "rawSpec": "^1.1.0",
     "scope": null,
-    "spec": ">=1.0.11 <2.0.0",
+    "spec": ">=1.1.0 <2.0.0",
     "type": "range"
   },
   "_requiredBy": [
@@ -29,7 +28,7 @@
   "_resolved": "https://registry.npmjs.org/azure-media/-/azure-media-1.0.11.tgz",
   "_shasum": "4092b99b051be4102e4a0294355b53761c18a0e5",
   "_shrinkwrap": null,
-  "_spec": "azure-media@^1.0.11",
+  "_spec": "azure-media@^1.1.0",
   "_where": "D:\\WebMatrix\\mstest1337",
   "bugs": {
     "url": "https://github.com/fritzy/node-azure-media/issues"
@@ -66,5 +65,5 @@
     "url": "git@github.com:fritzy/node-azure-media.git"
   },
   "scripts": {},
-  "version": "1.0.11"
+  "version": "1.1.0"
 }

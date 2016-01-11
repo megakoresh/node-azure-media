@@ -1,7 +1,7 @@
 {
   "_args": [
     [
-      "azure-media@^1.1.0",
+      "azure-media@^1.1.0"
     ]
   ],
   "_from": "azure-media@>=1.1.0 <2.0.0",
